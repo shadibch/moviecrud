@@ -156,6 +156,7 @@ var AppModule = /** @class */ (function () {
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
                 _angular_forms__WEBPACK_IMPORTED_MODULE_4__["FormsModule"],
+                _angular_forms__WEBPACK_IMPORTED_MODULE_4__["ReactiveFormsModule"],
                 _angular_material__WEBPACK_IMPORTED_MODULE_9__["MatInputModule"],
                 _angular_material__WEBPACK_IMPORTED_MODULE_9__["MatDialogModule"],
                 _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"],
@@ -192,7 +193,7 @@ module.exports = ".mat-dialog-container app-movie-dialog .dlg {\r\n\twidth:100%;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Movie</h1>\n<div mat-dialog-content>\n<div cllass=\"dlg\">\n  <label style=\"width:100px;  display:inline-block;color:#136CB2;\" for=\"title\">Title</label>\n  <mat-form-field style=\"width:250px;\">\n    <input style=\"width:250px;\" id=\"title\" matInput [(ngModel)]=\"data.movie.title\">\n  </mat-form-field>\n  <div>\n  <div cllass=\"dlg\">\n  <label style=\"width:100px;  display:inline-block;color:#136CB2;\" for=\"description\">Description</label>\n  <mat-form-field style=\"width:250px;\">\n  <textarea style=\"width:250px;\" id=\"description\" matInput [(ngModel)]=\"data.movie.description\" style=\"border:solid 1px;vertical-align: top;\" rows=\"4\"></textarea>\n    \n  </mat-form-field>\n  </div>\n  <div cllass=\"dlg\">\n  <label style=\"width:100px;  display:inline-block;color:#136CB2;\">Category</label>\n\t{{data.movie.category}}\n</div>\n</div>\n<div mat-dialog-actions>\n  <button mat-button (click)=\"onNoClick()\">Close</button>\n  <button mat-button [mat-dialog-close]=\"data\" (click)=\"data.save = true\" cdkFocusInitial>Save</button>\n</div>"
+module.exports = "<form [formGroup]=\"loginForm\" (submit)=\"onSubmit()\">\n<h1 mat-dialog-title>Movie</h1>\n<div mat-dialog-content>\n<div cllass=\"dlg\">\n  <label style=\"width:100px;  display:inline-block;color:#136CB2;\" for=\"title\">Title *</label>\n  <mat-form-field style=\"width:250px;\">\n    <input style=\"width:250px;\" formControlName=\"title\"  id=\"title\" matInput [(ngModel)]=\"data.movie.title\">\n\t <div class=\"error\" style=\"color:red;height:10px;display:inline-block;\" *ngIf=\"loginForm.controls['title'].hasError('required') && loginForm.controls['title'].touched\">Title is required</div>\n      \n  </mat-form-field>\n  </div>\n  <div>\n  <div cllass=\"dlg\">\n  <label style=\"width:100px;  display:inline-block;color:#136CB2;\" for=\"description\">Description</label>\n  <mat-form-field style=\"width:250px;\">\n  <textarea formControlName=\"description\" style=\"width:250px;\" id=\"description\" matInput [(ngModel)]=\"data.movie.description\" style=\"border:solid 1px;vertical-align: top;\" rows=\"4\"></textarea>\n  <div class=\"error\" style=\"color:red;height:10px;display:inline-block;\" *ngIf=\"loginForm.controls['description'].hasError('required') && loginForm.controls['description'].touched\">Description is required</div>  \n  </mat-form-field>\n  </div>\n  <div cllass=\"dlg\">\n  <label style=\"width:100px;  display:inline-block;color:#136CB2;\">Category</label>\n\t{{data.movie.category}}\n</div>\n</div>\n<div mat-dialog-actions>\n  <button mat-button (click)=\"onNoClick()\">Close</button>\n  <input type=\"submit\" mat-button  cdkFocusInitial value=\"Save\"/>\n</div>\n</div>\n</form>"
 
 /***/ }),
 
@@ -209,18 +210,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
+/* harmony import */ var _movie_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../movie.service */ "./src/app/movie.service.ts");
+
+
 
 
 
 var MovieDialogComponent = /** @class */ (function () {
-    function MovieDialogComponent(dialogRef, data) {
+    function MovieDialogComponent(dialogRef, data, movieService, formBuilder) {
         this.dialogRef = dialogRef;
         this.data = data;
+        this.movieService = movieService;
+        this.formBuilder = formBuilder;
     }
     MovieDialogComponent.prototype.onNoClick = function () {
         this.dialogRef.close();
     };
+    MovieDialogComponent.prototype.onSubmit = function () {
+        var _this = this;
+        if (this.loginForm.invalid) {
+            return;
+        }
+        this.movieService.save(this.data.movie).subscribe(function (r) {
+            _this.data.save = true;
+            _this.dialogRef.close();
+        });
+    };
     MovieDialogComponent.prototype.ngOnInit = function () {
+        this.loginForm = this.formBuilder.group({
+            title: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].compose([_angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required])],
+            description: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required]
+        });
     };
     MovieDialogComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -229,7 +250,8 @@ var MovieDialogComponent = /** @class */ (function () {
             styles: [__webpack_require__(/*! ./movie-dialog.component.css */ "./src/app/movie-dialog/movie-dialog.component.css")]
         }),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__param"](1, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_2__["MAT_DIALOG_DATA"])),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_material__WEBPACK_IMPORTED_MODULE_2__["MatDialogRef"], Object])
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_material__WEBPACK_IMPORTED_MODULE_2__["MatDialogRef"], Object, _movie_service__WEBPACK_IMPORTED_MODULE_4__["MovieService"],
+            _angular_forms__WEBPACK_IMPORTED_MODULE_3__["FormBuilder"]])
     ], MovieDialogComponent);
     return MovieDialogComponent;
 }());
@@ -420,16 +442,18 @@ var MovieComponent = /** @class */ (function () {
         var _this = this;
         this.movie = new _movie_page__WEBPACK_IMPORTED_MODULE_3__["Movie"]();
         this.movie.category = this.category;
+        var data_ = { 'save': false, 'movie': this.movie };
         var dialogRef = this.dialog.open(_movie_dialog_movie_dialog_component__WEBPACK_IMPORTED_MODULE_5__["MovieDialogComponent"], {
             width: '800px',
-            data: { 'save': false, 'movie': this.movie }
+            data: data_
         });
         dialogRef.afterClosed().subscribe(function (result) {
             console.log('The dialog was closed ' + JSON.stringify(result));
-            if (result.save) {
-                _this.movieService.save(result.movie).subscribe(function (r) {
-                    _this.updatePage(_this.currentPage.page.number);
-                });
+            if (data_.save) {
+                _this.updatePage(_this.currentPage.page.number);
+                /*this.movieService.save(result.movie).subscribe(r=>{
+                
+               });*/
             }
         });
     };
@@ -438,19 +462,24 @@ var MovieComponent = /** @class */ (function () {
         this.movieService.findById(movie).subscribe(function (m) {
             _this.movie = m;
             _this.movie.category = _this.category;
+            var data_ = { 'save': false, 'movie': _this.movie };
             var dialogRef = _this.dialog.open(_movie_dialog_movie_dialog_component__WEBPACK_IMPORTED_MODULE_5__["MovieDialogComponent"], {
                 width: '800px',
-                data: { 'save': false, 'movie': _this.movie }
+                data: data_
             });
             dialogRef.afterClosed().subscribe(function (result) {
                 console.log('The dialog was closed ' + JSON.stringify(result));
-                if (result.save) {
-                    _this.movieService.save(result.movie).subscribe(function (r) {
-                        _this.updatePage(_this.currentPage.page.number);
-                    });
+                if (data_.save) {
+                    _this.updatePage(_this.currentPage.page.number);
+                    /*this.movieService.save(result.movie).subscribe(r=>{
+                    
+                        });*/
                 }
             });
         });
+    };
+    MovieComponent.prototype.handleAfterExecutionSuccess = function (data) {
+        this.updatePage(this.currentPage.page.number);
     };
     MovieComponent.prototype.deleteMovie = function (movie) {
         var _this = this;
