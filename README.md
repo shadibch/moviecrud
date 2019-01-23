@@ -20,3 +20,7 @@ spring.datasource.password=root
 To run the spring project :
 java -jar target/video-0.0.1-SNAPSHOT.jar
 
+Access username:admin
+       password:admin
+	   
+
